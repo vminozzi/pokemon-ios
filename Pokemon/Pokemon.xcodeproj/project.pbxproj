@@ -114,16 +114,8 @@
 			isa = PBXGroup;
 			children = (
 				A02A021C20A299B4006FB6C6 /* HomeViewController */,
-				A02A021B20A299B4006FB6C6 /* DetailViewController */,
 			);
 			path = Controllers;
-			sourceTree = "<group>";
-		};
-		A02A021B20A299B4006FB6C6 /* DetailViewController */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = DetailViewController;
 			sourceTree = "<group>";
 		};
 		A02A021C20A299B4006FB6C6 /* HomeViewController */ = {

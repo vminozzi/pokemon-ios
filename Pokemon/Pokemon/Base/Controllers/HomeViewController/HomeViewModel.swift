@@ -9,6 +9,8 @@
 import Foundation
 
 protocol HomeViewModelPresentable: class {
+    var pokemons: [Pokemon] { get }
+    
     func getPokemonList()
     func numberOfSection() -> Int
     func numberOfRows(at section: Int) -> Int
@@ -24,6 +26,8 @@ class HomeViewModel: HomeViewModelPresentable {
     var interactor: HomeInteractorPresentable?
     var pokemons = [Pokemon]()
     var favorites = [Pokemon]()
+    var isLoading = false
+    var offset = 0
     
     
     // MARK: - Init
@@ -35,18 +39,26 @@ class HomeViewModel: HomeViewModelPresentable {
     
     // MARK: - HomeViewModelPresentable
     func getPokemonList() {
-        interactor?.getPokemon(offset: pokemons.count, completion: { pokemons, error in
-            guard let results = pokemons else {
-                self.delegate?.didLoadContent(error: error)
-                return
-            }
-            results.forEach {
-                if !self.isFavorite(pokemon: $0) {
-                    self.pokemons.append($0)
+        if !isLoading {
+            isLoading = true
+            interactor?.getPokemon(offset: offset, completion: { pokemons, error in
+                self.isLoading = false
+                guard let results = pokemons else {
+                    self.delegate?.didLoadContent(error: error)
+                    return
                 }
-            }
-            self.delegate?.didLoadContent(error: nil)
-        })
+                
+                self.offset += results.count
+                results.forEach {
+                    if !self.isFavorite(pokemon: $0) {
+                        if !self.pokemons.contains($0) {
+                            self.pokemons.append($0)
+                        }
+                    }
+                }
+                self.delegate?.didLoadContent(error: nil)
+            })
+        }
     }
     
     func numberOfSection() -> Int {
@@ -85,22 +97,23 @@ class HomeViewModel: HomeViewModelPresentable {
     }
     
     func didFavorite(url: String) {
+        let persistence = LocalDataBase()
         if let pokemon = pokemons.filter({ $0.url == url }).first {
-            let persistence = LocalDataBase()
-            if favorites.contains(pokemon) {
-                persistence.remove(object: pokemon)
-                pokemons.append(pokemon)
-            } else {
-                pokemons = pokemons.filter { $0 != pokemon }
-                persistence.save(object: pokemon)
+            favorites.append(pokemon)
+            pokemons = pokemons.filter { $0 != pokemon }
+            persistence.save(object: pokemon)
+        } else {
+            if let favorite = favorites.filter({ $0.url == url }).first {
+                persistence.remove(object: favorite)
+                pokemons.append(favorite)
+                favorites = favorites.filter { $0 != favorite }
             }
-            loadFavories()
         }
+        delegate?.didLoadContent(error: nil)
     }
     
     func loadFavories() {
         favorites = LocalDataBase().load(object: Pokemon.self) ?? []
-        delegate?.didLoadContent(error: nil)
     }
     
     func titleForSection(index: Int) -> String {

@@ -40,6 +40,11 @@ class HomeViewController: UITableViewController, LoadContent, PokemonCellDelegat
         let cell: PokemonCell = PokemonCell.createCell(tableView: tableView, indexPath: indexPath)
         cell.fill(dto: viewModel.pokemonDTO(at: indexPath))
         cell.delegate = self
+        
+        if indexPath.row == (viewModel.numberOfRows(at: viewModel.numberOfSection()) - 1) {
+            loadContent()
+        }
+        
         return cell
     }
     

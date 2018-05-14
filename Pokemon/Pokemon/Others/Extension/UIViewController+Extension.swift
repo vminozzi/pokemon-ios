@@ -16,14 +16,14 @@ extension UIViewController {
             let loader = UIActivityIndicatorView(activityIndicatorStyle: .gray)
             loader.center = UIApplication.shared.keyWindow?.center ?? CGPoint()
             loader.startAnimating()
-            UIApplication.shared.keyWindow?.addSubview(loader)
+            UIApplication.shared.windows.first?.addSubview(loader)
         }
     }
     
     func dismissLoader() {
         DispatchQueue.main.async {
-            if let loader = UIApplication.shared.keyWindow?.subviews.filter({ $0 is UIActivityIndicatorView }).first as? UIActivityIndicatorView {
-                loader.removeFromSuperview()
+            if let loader = UIApplication.shared.keyWindow?.subviews.filter({ $0 is UIActivityIndicatorView }) as? [UIActivityIndicatorView] {
+                loader.forEach { $0.removeFromSuperview() }
             }
         }
     }
