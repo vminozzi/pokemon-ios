@@ -14,10 +14,10 @@ struct PokemonListResult: Mappable {
     var results = [Pokemon]()
     
     init?(data: Data) {
-        
-    }
-    
-    static func ==(lhs: PokemonListResult, rhs: PokemonListResult) -> Bool {
-        return lhs.count == rhs.count && lhs.results == rhs.results
+        guard let decoded = try? JSONDecoder().decode(PokemonListResult.self, from: data) else {
+            return
+        }
+        count = decoded.count
+        results = decoded.results
     }
 }

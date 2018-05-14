@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 struct PokemonCellDTO {
     var title = ""
@@ -37,6 +38,8 @@ class PokemonCell: UITableViewCell {
     
     // MARK: - IBAction
     @IBAction func didFavorite() {
+        let pop = SystemSoundID(1520)
+        AudioServicesPlaySystemSound(pop)
         favoriteButton.isSelected = !favoriteButton.isSelected
         delegate?.didFavorite(url: url)
     }

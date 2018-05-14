@@ -16,8 +16,4 @@ struct Pokemon: Mappable {
     init?(data: Data) {
         
     }
-    
-    static func ==(lhs: Pokemon, rhs: Pokemon) -> Bool {
-        return lhs.name == rhs.name && lhs.url == rhs.url
-    }
 }

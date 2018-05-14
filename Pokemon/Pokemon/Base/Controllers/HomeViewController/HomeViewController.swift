@@ -33,14 +33,18 @@ class HomeViewController: UITableViewController, LoadContent, PokemonCellDelegat
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows()
+        return viewModel.numberOfRows(at: section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: PokemonCell = PokemonCell.createCell(tableView: tableView, indexPath: indexPath)
-        cell.fill(dto: viewModel.pokemonDTO(at: indexPath.row))
+        cell.fill(dto: viewModel.pokemonDTO(at: indexPath))
         cell.delegate = self
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return viewModel.titleForSection(index: section)
     }
 
     
@@ -52,8 +56,8 @@ class HomeViewController: UITableViewController, LoadContent, PokemonCellDelegat
     // MAKR: - LoadContent
     func didLoadContent(error: String?) {
         dismissLoader()
-        if let _ = error {
-            
+        if let message = error {
+            showDefaultAlert(message: message, completeBlock: nil)
         } else {
             DispatchQueue.main.async {
                 self.tableView.reloadData()
